@@ -215,10 +215,11 @@ int main(void) {
 			bool wait = true;
 			
 			for (int i = 0; i < arrayLen(in_); ++i) {
-				if (in_[i][0] == '|')
+				if (in_[i][0] == '|') {
 					usesPipe = i;
 					end = i;
 					hasPipe = WRITE;
+				}
 			}
 
 			if (!usesPipe) 

@@ -205,30 +205,29 @@ int main(void) {
 	char *command = in_[0];
 	if (!getcwd(dir_, sizeof(dir_))) exit(-1);
 	strcpy(oldDir_, dir_);
-	while (printf("%s> ", dir_), input(),  command = in_[0], strcmp(command, "exit"))
+	while (printf("\n%s> ", dir_), input(),  command = in_[0], strcmp(command, "exit"))
 	{
 		if (strcmp(command, "")) {
 			int usesPipe = 0;
+			int begin = 1;
+			int end = 1;
+			int hasPipe = NONE;
+			bool wait = true;
+			
 			for (int i = 0; i < arrayLen(in_); ++i) {
 				if (in_[i][0] == '|')
 					usesPipe = i;
+					end = i;
+					hasPipe = WRITE;
 			}
-			int begin = 1;
-			int end = 1;
-			bool wait = true;
+
+			if (!usesPipe) 
+				end = arrayLen(in_);
 
 			int fd[2];
 			if(pipe(fd) < 0)
 				exit(-1);
-			int hasPipe = NONE;
 
-			if (usesPipe) {
-				end = usesPipe;
-				hasPipe = WRITE;
-			}
-			else {
-				end = arrayLen(in_);
-			}
 			if (in_[end - 1][0] == '&') {
 				--end;
 				wait = false;

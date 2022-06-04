@@ -18,9 +18,9 @@ static char oldDir_[PATH_MAX];
 static char dir_[PATH_MAX];
 int child_;
 
-void release (char*** arr) {
-	for(int i = 0; i < arrayLen(*arr); ++i) arrayRelease((*arr)[i]);
-	arrayClear(*arr);
+void release (char*** pppArr) {
+	for(int i = 0; i < arrayLen(*pppArr); ++i) arrayRelease((*pppArr)[i]);
+	arrayClear(*pppArr);
 }
 
 void debug() {
@@ -33,15 +33,15 @@ void debug() {
 void input() {
 	release(&in_);
 	int i = 0;
-	char* newElement;
-	arrayInit(newElement);
-	arrayPush(in_) = newElement;
+	char* pNewEle;
+	arrayInit(pNewEle);
+	arrayPush(in_) = pNewEle;
 	while(1) {
 		char temp = getchar();
 		if(temp == ' ') {
-			char* newElement;
-			arrayInit(newElement);
-			arrayPush(in_) = newElement;
+			char* pNewStr;
+			arrayInit(pNewStr);
+			arrayPush(in_) = pNewStr;
 			arrayPush(in_[i]) = '\0';
 			++i;
 		}
@@ -53,62 +53,63 @@ void input() {
 	}
 } 
 
-void split(const char delimiter,const char* str, char** ret) {
-	char* newElement;
-	arrayInit(newElement);
-	arrayPush(ret) = newElement;
+void split(char delimiter,const char* pStr, char** ppRet) {
+	char* pNewEle;
+	arrayInit(pNewEle);
+	arrayPush(ppRet) = pNewEle;
 	int pos = 0;
-	for(int i=1; str[i]; ++i) {
-		if(str[i] == delimiter) {
-			arrayPush(ret[pos]) = '\0';
-			char* newElement;
-			arrayInit(newElement);
-			arrayPush(ret) = newElement;
+	for(int i=1; pStr[i]; ++i) {
+		if(pStr[i] == delimiter) {
+			arrayPush(ppRet[pos]) = '\0';
+			char* pNewStr;
+			arrayInit(pNewStr);
+			arrayPush(ppRet) = pNewStr;
 			++pos;
 		}
 		else {
-			arrayPush(ret[pos]) = str[i];
+			arrayPush(ppRet[pos]) = pStr[i];
 		}
 	}
-	arrayPush(ret[pos]) = '\0';
+
+	arrayPush(ppRet[pos]) = '\0';
 }
 
-void delete(char** arr, int pos) {
-	for(int i = pos; i < arrayLen(arr)-1; ++i) {
-		arr[i] = arr[i+1];
+void delete(char** ppArr, int pos) {
+	for(int i = pos; i < arrayLen(ppArr)-1; ++i) {
+		ppArr[i] = ppArr[i+1];
 	}
-	arrayRelease(arr[arrayLen(arr)-1]);
-	char* discard = arrayPop(arr);++discard;
+	arrayRelease(ppArr[arrayLen(ppArr)-1]);
+	char* pDiscard = arrayPop(ppArr);++pDiscard;
 }
 
-void translateDir(char** dirs, char* ret) {
-	for(int i = 0; i<arrayLen(dirs); ++i) {
-		if(!strcmp(dirs[i], "..")) {
+void translateDir(char** ppDirs, char* pRet) {
+	for(int i = 0; i<arrayLen(ppDirs); ++i) {
+		if(!strcmp(ppDirs[i], "..")) {
 			if(i >= 1) {
-				delete(dirs, i);
-				delete(dirs, i-1);
+				delete(ppDirs, i);
+				delete(ppDirs, i-1);
 			}
 		}
 	}
-	strcpy(ret, "");
-	strcat(ret, "/");
-	for(int i = 0; i < arrayLen(dirs); ++i) {
-		char temp[arrayLen(dirs[i])+2];
-		strcpy(temp, dirs[i]);
-		if(i != arrayLen(dirs)-1) strcat(temp, "/");
-		strcat(ret,temp);
+	strcpy(pRet, "");
+	strcat(pRet, "/");
+	for(int i = 0; i < arrayLen(ppDirs); ++i) {
+		char pTemp[arrayLen(ppDirs[i])+2];
+		strcpy(pTemp, ppDirs[i]);
+		if(i != arrayLen(ppDirs)-1) strcat(pTemp, "/");
+		strcat(pRet,pTemp);
 	}
 
 }
 
-void* w8Pid(void* child) {
+void* w8Pid(void* pChild) {
 
 	int status;
-	waitpid(*(int*)(child), &status, 0); 
+	waitpid(*(int*)(pChild), &status, 0); 
 	if(! WIFEXITED(status)) {
-		printf("[%i] finished with status code %i!\n", *(int*)(child), status);
+		printf("[%i] finished with status code %i!\n", *(int*)(pChild), status);
 	}
-	else printf("[%i] finished normally!\n", *(int*)(child));
+	else printf("[%i] finished normally!\n", *(int*)(pChild));
 	return NULL;
 }
 
@@ -123,7 +124,7 @@ void signalhandler(int i) {
 	kill(child_, SIGINT);
 }
 
-void execute(const char* command, int start, int end, bool wait, int fd[2], int hasPipe ) {
+void execute(const char* pCommand, int start, int end, bool wait, int pFd[2], int hasPipe ) {
 	// acts on globael variable _in; arguments "begin" at start and end at "end"
 	char** arguments;
 	arrayInit(arguments);
@@ -131,7 +132,7 @@ void execute(const char* command, int start, int end, bool wait, int fd[2], int 
 		arrayPush(arguments) = in_[i];
 	}
 
-	if (!strcmp(command, "cd")) {
+	if (!strcmp(pCommand, "cd")) {
 		if (arguments[0][0] == '-') {
 			if (!chdir(&oldDir_[1])) exit(-1);
 			char temp[PATH_MAX];
@@ -145,20 +146,21 @@ void execute(const char* command, int start, int end, bool wait, int fd[2], int 
 		strcpy(path, dir_);
 		if(arguments[0][0] != '/') strcat(path,"/");
 		strcat(path, arguments[0]);
-		char** dirs;
-		arrayInit(dirs);
-		split('/', path, dirs);
-		translateDir(dirs, path);
+
+		char** ppDirs;
+		arrayInit(ppDirs);
+		split('/', path, ppDirs);
+		translateDir(ppDirs, path);
 		if (!chdir(&path[1])) exit(-1);
 		strcpy(dir_, path);
-		release(&dirs);
+		release(&ppDirs);
 		return;
 	}
 
-	if (!strcmp(command, "wait")){
+	if (!strcmp(pCommand, "wait")){
 		int status;
-		char** end = NULL;
-		int pid = strtol(arguments[0], end , 10);
+		char** ppEnd = NULL;
+		int pid = strtol(arguments[0], ppEnd , 10);
 		child_ = pid;
 		signal(SIGINT, signalhandler);
 		waitpid(pid, &status, 0);
@@ -169,28 +171,28 @@ void execute(const char* command, int start, int end, bool wait, int fd[2], int 
 	int child = fork();
 	if (child == 0) {
 		if (hasPipe == READ) {
-			dup2(fd[0], STDIN_FILENO);
-			close(fd[1]);
+			dup2(pFd[0], STDIN_FILENO);
+			close(pFd[1]);
 		}
 		else if (hasPipe == WRITE) {
-			dup2(fd[1], STDOUT_FILENO);
-			close(fd[0]);
+			dup2(pFd[1], STDOUT_FILENO);
+			close(pFd[0]);
 		}
 		else {
-			close(fd[0]);
-			close(fd[1]);
+			close(pFd[0]);
+			close(pFd[1]);
 		}
-		char* argumentsTemp[arrayLen(command)+2];
-		argumentsTemp[0] = "shell";
-		for(int i = 0; i < arrayLen(command); ++i) argumentsTemp[i+1] = arguments[i];
-		char command2[100] = "";
-		strcat(command2, "./");
-		printf("command2: %s \n", command2);
-		strcat(command2, command);
-		execvp(command, argumentsTemp); 
-		printf("command2: %s \n", command2);
-		execvp(command2, argumentsTemp);
-		printf("execution of %s failed!\n", command);
+		char* ppArgumentsTemp[arrayLen(pCommand)+2];
+		ppArgumentsTemp[0] = NULL;
+		for(int i = 0; i < arrayLen(pCommand); ++i) ppArgumentsTemp[i+1] = arguments[i];
+		char pCommand2[100] = "";
+		strcat(pCommand2, "./");
+		printf("command2: %s \n", pCommand2);
+		strcat(pCommand2, pCommand);
+		execvp(pCommand, ppArgumentsTemp); 
+		printf("command2: %s \n", pCommand2);
+		execvp(pCommand2, ppArgumentsTemp);
+		printf("execution of %s failed!\n", pCommand);
 		exit(-1);
 	}
 
@@ -206,12 +208,12 @@ void execute(const char* command, int start, int end, bool wait, int fd[2], int 
 
 int main(void) {
 	arrayInit(in_);
-	char *command = in_[0];
+	char *pCommand = in_[0];
 	if (!getcwd(dir_, sizeof(dir_))) exit(-1);
 	strcpy(oldDir_, dir_);
-	while (printf("\n%s> ", dir_), input(),  command = in_[0], strcmp(command, "exit"))
+	while (printf("\n%s> ", dir_), input(),  pCommand = in_[0], strcmp(pCommand, "exit"))
 	{
-		if (strcmp(command, "")) {
+		if (strcmp(pCommand, "")) {
 			int usesPipe = 0;
 			int begin = 1;
 			int end = 1;
@@ -237,17 +239,17 @@ int main(void) {
 				--end;
 				w8 = false;
 			}
-			execute(command, begin, end, w8, fd, hasPipe);
+			execute(pCommand, begin, end, w8, fd, hasPipe);
 			if(usesPipe) {
 				if(strcmp(in_[usesPipe+1], "")) {
 					w8 = true;
-					command = in_[usesPipe+1];
+					pCommand = in_[usesPipe+1];
 					end = arrayLen(in_);
 					if (in_[end - 1][0] == '&') {
 						--end;
 						w8 = false;
 					}
-					execute(command, usesPipe+2, end, w8, fd, READ);
+					execute(pCommand, usesPipe+2, end, w8, fd, READ);
 					close(fd[0]);
 					close(fd[1]);
 				}

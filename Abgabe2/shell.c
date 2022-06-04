@@ -209,11 +209,13 @@ void execute(const char* pCommand, int start, int end, bool wait, int pFd[2], in
 			close(pFd[1]);
 		}
 		char* ppArgumentsTemp[arrayLen(pCommand)+2];
-		ppArgumentsTemp[0] = NULL;
+		char* pName = "shell";
+		ppArgumentsTemp[0] = pName;
 		for(int i = 0; i < arrayLen(pCommand); ++i) ppArgumentsTemp[i+1] = arguments[i];
 		char pCommand2[100] = "";
 		strcat(pCommand2, "./");
 		strcat(pCommand2, pCommand);
+		printf("pCommand: %s \n", pCommand);
 		execvp(pCommand, ppArgumentsTemp); 
 		execvp(pCommand2, ppArgumentsTemp);
 		printf("execution of %s failed!\n", pCommand);

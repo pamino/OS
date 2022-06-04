@@ -13,9 +13,10 @@
 #include <pthread.h>
 #include "array.h"
 
-static char** in_;
-static char oldDir_[PATH_MAX];
-static char dir_[PATH_MAX];
+static char** _ppIn;
+static char _pStartDir[PATH_MAX];
+static char _pOldDir[PATH_MAX];
+static char _Dir[PATH_MAX];
 int child_;
 
 void release (char*** pppArr) {
@@ -82,31 +83,33 @@ void relativeCwd(char* pEntryPath, char* pCurrPath, char (*ppRelativePath)[PATH_
 		(*ppRelativePath)[2 + depth_diff * 3] = '\0';
 	}
 }
+
 void input() {
-	release(&in_);
 	{
 		char pRelPath[PATH_MAX];
 		relativeCwd(_pStartDir, _Dir, &pRelPath);
 		printf("%s>", pRelPath);
 	}
+
+	release(&_ppIn);
 	int i = 0;
 	char* pNewEle;
 	arrayInit(pNewEle);
-	arrayPush(in_) = pNewEle;
+	arrayPush(_ppIn) = pNewEle;
 	while(1) {
 		char temp = getchar();
 		if(temp == ' ') {
 			char* pNewStr;
 			arrayInit(pNewStr);
-			arrayPush(in_) = pNewStr;
-			arrayPush(in_[i]) = '\0';
+			arrayPush(_ppIn) = pNewStr;
+			arrayPush(_ppIn[i]) = '\0';
 			++i;
 		}
 		else if(temp == '\n') {
-			arrayPush(in_[i]) = '\0';
+			arrayPush(_ppIn[i]) = '\0';
 			return;
 		}
-		else arrayPush(in_[i]) = temp;
+		else arrayPush(_ppIn[i]) = temp;
 	}
 } 
 
@@ -186,21 +189,21 @@ void execute(const char* pCommand, int start, int end, bool wait, int pFd[2], in
 	char** arguments;
 	arrayInit(arguments);
 	for(int i = start; i < end; ++i) {
-		arrayPush(arguments) = in_[i];
+		arrayPush(arguments) = _ppIn[i];
 	}
 
 	if (!strcmp(pCommand, "cd")) {
 		if (arguments[0][0] == '-') {
-			if (!chdir(&oldDir_[1])) exit(-1);
+			if (!chdir(&_pOldDir[1])) exit(-1);
 			char temp[PATH_MAX];
-			strcpy(temp, dir_);
-			strcpy(dir_,oldDir_);
-			strcpy(oldDir_,temp);
+			strcpy(temp, _Dir);
+			strcpy(_Dir,_pOldDir);
+			strcpy(_pOldDir,temp);
 			return;
 		}
-		strcpy(oldDir_, dir_);
+		strcpy(_pOldDir, _Dir);
 		char path[PATH_MAX];
-		strcpy(path, dir_);
+		strcpy(path, _Dir);
 		if(arguments[0][0] != '/') strcat(path,"/");
 		strcat(path, arguments[0]);
 
@@ -209,7 +212,7 @@ void execute(const char* pCommand, int start, int end, bool wait, int pFd[2], in
 		split('/', path, ppDirs);
 		translateDir(ppDirs, path);
 		if (!chdir(&path[1])) exit(-1);
-		strcpy(dir_, path);
+		strcpy(_Dir, path);
 		release(&ppDirs);
 		return;
 	}
@@ -244,10 +247,8 @@ void execute(const char* pCommand, int start, int end, bool wait, int pFd[2], in
 		for(int i = 0; i < arrayLen(pCommand); ++i) ppArgumentsTemp[i+1] = arguments[i];
 		char pCommand2[100] = "";
 		strcat(pCommand2, "./");
-		printf("command2: %s \n", pCommand2);
 		strcat(pCommand2, pCommand);
 		execvp(pCommand, ppArgumentsTemp); 
-		printf("command2: %s \n", pCommand2);
 		execvp(pCommand2, ppArgumentsTemp);
 		printf("execution of %s failed!\n", pCommand);
 		exit(-1);
@@ -264,11 +265,10 @@ void execute(const char* pCommand, int start, int end, bool wait, int pFd[2], in
 }
 
 int main(void) {
-	arrayInit(in_);
-	char *pCommand = in_[0];
-	if (!getcwd(dir_, sizeof(dir_))) exit(-1);
-	strcpy(oldDir_, dir_);
-	while (printf("\n%s> ", dir_), input(),  pCommand = in_[0], strcmp(pCommand, "exit"))
+	arrayInit(_ppIn);
+	char *pCommand = _ppIn[0];
+	if (!getcwd(_Dir, sizeof(_Dir))) exit(-1);
+	strcpy(_pOldDir, _Dir);
 	strcpy(_pStartDir, _Dir);
 	while (input(),  pCommand = _ppIn[0], strcmp(pCommand, "exit"))
 	{
@@ -279,8 +279,8 @@ int main(void) {
 			int hasPipe = NONE;
 			bool w8 = true;
 			
-			for (int i = 0; i < arrayLen(in_); ++i) {
-				if (in_[i][0] == '|') {
+			for (int i = 0; i < arrayLen(_ppIn); ++i) {
+				if (_ppIn[i][0] == '|') {
 					usesPipe = i;
 					end = i;
 					hasPipe = WRITE;
@@ -288,23 +288,23 @@ int main(void) {
 			}
 
 			if (!usesPipe) 
-				end = arrayLen(in_);
+				end = arrayLen(_ppIn);
 
 			int fd[2];
 			if(pipe(fd) < 0)
 				exit(-1);
 
-			if (in_[end - 1][0] == '&') {
+			if (_ppIn[end - 1][0] == '&') {
 				--end;
 				w8 = false;
 			}
 			execute(pCommand, begin, end, w8, fd, hasPipe);
 			if(usesPipe) {
-				if(strcmp(in_[usesPipe+1], "")) {
+				if(strcmp(_ppIn[usesPipe+1], "")) {
 					w8 = true;
-					pCommand = in_[usesPipe+1];
-					end = arrayLen(in_);
-					if (in_[end - 1][0] == '&') {
+					pCommand = _ppIn[usesPipe+1];
+					end = arrayLen(_ppIn);
+					if (_ppIn[end - 1][0] == '&') {
 						--end;
 						w8 = false;
 					}
@@ -316,5 +316,5 @@ int main(void) {
 			if (!w8) sleep(1);
 		}
 	}
-	release(&in_);
+	release(&_ppIn);
 }

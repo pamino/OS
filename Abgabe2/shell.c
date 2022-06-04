@@ -30,8 +30,65 @@ void debug() {
 }
 
 
+void relativeCwd(char* pEntryPath, char* pCurrPath, char (*ppRelativePath)[PATH_MAX]) {
+	size_t n1 = strlen(pEntryPath);
+	size_t n2 = strlen(pCurrPath);
+
+	if (n1 == n2) {
+		strcpy((*ppRelativePath),"./");
+	}
+	else if (n1 < n2) {
+		size_t n = n2 - n1 + 1;
+
+		(*ppRelativePath)[0] = '.';
+		(*ppRelativePath)[1] = '/';
+
+		for (size_t i = 2; i <= n; i++) {
+			(*ppRelativePath)[i] = pCurrPath[n1++];
+		}
+		(*ppRelativePath)[n + 2] = '\0';
+	}
+	else {
+		// calculate depth of cwd
+		size_t entry_depth = 0;
+		size_t curr_depth = 0;
+
+		for (size_t i = 0; i < n1; i++) {
+			if (pEntryPath[i] == '/' && i < n1 - 1) {
+				// trailing slash has no depth
+				entry_depth++;
+			}
+		}
+
+		for (size_t i = 0; i < n2; i++) {
+			if (pCurrPath[i] == '/' && i < n2 - 1) {
+				// trailing slash has no depth
+				curr_depth++;
+			}
+		}
+
+		size_t depth_diff = entry_depth - curr_depth;
+
+
+		(*ppRelativePath)[0] = '.';
+		(*ppRelativePath)[1] = '/';
+
+		for (size_t i = 2; i < depth_diff * 3; i += 3) {
+			(*ppRelativePath)[i] = '.';
+			(*ppRelativePath)[i + 1] = '.';
+			(*ppRelativePath)[i + 2] = '/';
+		}
+
+		(*ppRelativePath)[2 + depth_diff * 3] = '\0';
+	}
+}
 void input() {
 	release(&in_);
+	{
+		char pRelPath[PATH_MAX];
+		relativeCwd(_pStartDir, _Dir, &pRelPath);
+		printf("%s>", pRelPath);
+	}
 	int i = 0;
 	char* pNewEle;
 	arrayInit(pNewEle);
@@ -212,6 +269,8 @@ int main(void) {
 	if (!getcwd(dir_, sizeof(dir_))) exit(-1);
 	strcpy(oldDir_, dir_);
 	while (printf("\n%s> ", dir_), input(),  pCommand = in_[0], strcmp(pCommand, "exit"))
+	strcpy(_pStartDir, _Dir);
+	while (input(),  pCommand = _ppIn[0], strcmp(pCommand, "exit"))
 	{
 		if (strcmp(pCommand, "")) {
 			int usesPipe = 0;

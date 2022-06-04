@@ -212,7 +212,7 @@ int main(void) {
 			int begin = 1;
 			int end = 1;
 			int hasPipe = NONE;
-			bool wait = true;
+			bool w8 = true;
 			
 			for (int i = 0; i < arrayLen(in_); ++i) {
 				if (in_[i][0] == '|') {
@@ -231,23 +231,24 @@ int main(void) {
 
 			if (in_[end - 1][0] == '&') {
 				--end;
-				wait = false;
+				w8 = false;
 			}
-			execute(command, begin, end, wait, fd, hasPipe);
+			execute(command, begin, end, w8, fd, hasPipe);
 			if(usesPipe) {
 				if(strcmp(in_[usesPipe+1], "")) {
-					wait = true;
+					w8 = true;
 					command = in_[usesPipe+1];
 					end = arrayLen(in_);
 					if (in_[end - 1][0] == '&') {
 						--end;
-						wait = false;
+						w8 = false;
 					}
-					execute(command, usesPipe+2, end, wait, fd, READ);
+					execute(command, usesPipe+2, end, w8, fd, READ);
 					close(fd[0]);
 					close(fd[1]);
 				}
 			}
+			if (!w8) sleep(1);
 		}
 	}
 	release(&in_);

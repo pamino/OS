@@ -29,6 +29,7 @@ void debug() {
 	printf( "pos %i\n", i);
 }
 
+
 void input() {
 	release(&in_);
 	int i = 0;
@@ -182,10 +183,13 @@ void execute(const char* command, int start, int end, bool wait, int fd[2], int 
 		char* argumentsTemp[arrayLen(command)+2];
 		argumentsTemp[0] = "shell";
 		for(int i = 0; i < arrayLen(command); ++i) argumentsTemp[i+1] = arguments[i];
-		char command2[100];
+		char command2[100] = "";
 		strcat(command2, "./");
+		printf("command2: %s \n", command2);
 		strcat(command2, command);
-		if (execvp(command, argumentsTemp) == -1) execvp(command2, argumentsTemp);
+		execvp(command, argumentsTemp); 
+		printf("command2: %s \n", command2);
+		execvp(command2, argumentsTemp);
 		printf("execution of %s failed!\n", command);
 		exit(-1);
 	}

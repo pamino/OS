@@ -1,0 +1,13 @@
+﻿*.suo
+*.d
+Abgabe3/server
+Abgabe3/libshared.a
+*.o
+*.zip
+*.json
+Abgabe3/client
+Abgabe3/.srv_pid
+Abgabe3/srv/.server.c.swp
+*.bak
+Abgabe2/.vs/Abgabe2/v17/Browse.VC.db
+Abgabe2/.vs/slnx.sqlite

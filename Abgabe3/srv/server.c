@@ -29,15 +29,15 @@ int main()
 	srv_addr.sin_port = htons(PORT);
 	srv_addr.sin_addr.s_addr = INADDR_ANY;
 
-	try_ ((sfd = socket(AF_INET, SOCK_STREAM, 0)) < 0), "Couldn't open the socket");
+	sfd = try_(socket(AF_INET, SOCK_STREAM, 0), "Couldn't open the socket");
 
 	setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, (char*)&sockopt, sizeof(sockopt));
 
-	try_(bind(sfd, (struct sockaddr*)&srv_addr, sad_sz) < 0), "Couldn't bind socket");
+	try_(bind(sfd, (struct sockaddr*)&srv_addr, sad_sz), "Couldn't bind socket");
 
-	try_(listen(sfd, 1) < 0), "Couldn't listen to the socket");
-	while (true) {
-		try_(accept(sfd, (struct sockaddr *)&cli_addr, &sad_sz), "Couldn't accept incoming connection");
+	try_(listen(sfd, 1), "Couldn't listen to the socket");
+	while(1) {
+		cfd = try_(accept(sfd, (struct sockaddr *)&cli_addr, &sad_sz), "Couldn't accept incoming connection");
 		while ((bytes = read(cfd, buf, sizeof(buf))) != 0)
 		{
 			if (bytes < 0)

@@ -24,12 +24,6 @@ void release(char*** pppArr) {
 	arrayClear(*pppArr);
 }
 
-void debug() {
-	static int i = 0;
-	++i;
-	printf("pos %i\n", i);
-}
-
 
 void relate(char* pOut, const char* pBase, const char* pOff) {
 	// 1: skip the shared prefix

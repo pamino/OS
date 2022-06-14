@@ -1,32 +1,54 @@
 #!/usr/bin/make
 .SUFFIXES:
 .PHONY: all run pack clean
-TAR = shell prog
-SRC = $(wildcard *.c)
-OBJ = $(SRC:%.c=%.o)
-PCK = lab-2.zip
+.SILENT: run
 
-CFLAGS = -std=gnu11 -c -g -Os -Wall -Werror -MMD -MP
+TAR = libshared.a client server
+PCK = lab-3.zip
+LIB = libshared.a
 
-DEP = $(OBJ:%.o=%.d)
--include $(DEP)
+CFLAGS = -std=gnu11 -Wno-unused-result -c -g -Os -Wall -MMD -MP -I "lib"
+LFLAGS = -pthread
+AFLAGS = rcs
+
+SHARED_SRC = $(wildcard lib/*.c)
+SHARED_OBJ = $(SHARED_SRC:%.c=%.o)
+SHARED_DEP = $(SHARED_SRC:%.c=%.d)
+
+CLIENT_SRC = $(wildcard cli/*.c)
+CLIENT_OBJ = $(CLIENT_SRC:%.c=%.o)
+CLIENT_DEP = $(CLIENT_SRC:%.c=%.d)
+
+SERVER_SRC = $(wildcard srv/*.c)
+SERVER_OBJ = $(SERVER_SRC:%.c=%.o)
+SERVER_DEP = $(SERVER_SRC:%.c=%.d)
+
+-include $(SHARED_DEP) $(CLIENT_DEP) $(SERVER_DEP)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
+client: $(CLIENT_OBJ) $(LIB)
+	$(CC) -o $@ $^ $(LFLAGS)
+
+server: $(SERVER_OBJ) $(LIB)
+	@if [ -e .srv_pid ]; then kill `cat .srv_pid`; $(RM) $(RMFILES) .srv_pid; fi
+	$(CC) -o $@ $^ $(LFLAGS)
+
+libshared.a: $(SHARED_OBJ)
+	$(AR) $(AFLAGS) $@ $^
+
 all: $(TAR)
 
-prog: prog.o
-	$(CC) -o $@ $^
+.srv_pid:
+	./server& echo $$! > .srv_pid
 
-shell: $(filter-out prog.o,$(OBJ))
-	$(CC) -o $@ $^
+run: all .srv_pid
+	./client
 
-run: all
-	./shell
-
-pack:
-	zip $(PCK) $(SRC) $(wildcard *.h) Makefile
+pack: clean
+	zip -r $(PCK) cli srv lib Makefile -x "*/.*"
 
 clean:
-	$(RM) $(RMFILES) $(TAR) $(OBJ) $(DEP) $(PCK)
+	@if [ -e .srv_pid ]; then kill `cat .srv_pid`; $(RM) $(RMFILES) .srv_pid; fi
+	$(RM) $(RMFILES) .srv_pid $(TAR) $(PCK) $(CLIENT_OBJ) $(CLIENT_DEP) $(SERVER_OBJ) $(SERVER_DEP) $(SHARED_OBJ) $(SHARED_DEP)

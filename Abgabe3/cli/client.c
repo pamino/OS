@@ -97,7 +97,6 @@ int main()
 	pthread_t threadId;
 
 	int smallBuf[2];
-	debug();
 	while (read(connectionFd, &smallBuf, 1) != 0) {
 		pthread_mutex_lock(&mutex);
 		if (!threadActive) {

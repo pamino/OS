@@ -20,11 +20,17 @@ void makeDir(const char* pArgument, char** ppDir, char* pRet) {
 	strcpy(pRet, path);
 }
 
+void writePath(const char* pStartDir, const char* pDir) {
+	char pRelPath[PATH_MAX];
+	relate(pRelPath, pStartDir, pDir);
+	write(1, pRelPath, sizeof(pRelPath));
+	write(1, ">", 1);
+}
+
 // ----- threadFunc ----
 void* threadFunc(void* arg) {
 	int* connectionFd = arg;
 
-	debug();
 	ssize_t bytes;
 	char buf[256];
 	char pDir[PATH_MAX];
@@ -33,17 +39,16 @@ void* threadFunc(void* arg) {
 
 	getcwd(pStartDir,sizeof(pStartDir));
 	strcpy(pDir, pStartDir);
-	debug();
 	dup2(*connectionFd, 0);
 	dup2(*connectionFd, 1);
 
-	while ((bytes = read(0, buf, sizeof(buf))) != 0){
+	writePath(pStartDir, pDir);
 
-		{
-			char pRelPath[PATH_MAX];
-			relate(pRelPath, pStartDir, pDir);
-			write(1, pRelPath, sizeof(pRelPath));
-			write(1, ">", 1);
+	bool start = true;
+	while ((bytes = read(0, buf, sizeof(buf))) != 0){
+		if (start) {
+			writePath(pStartDir, pDir);
+			start = false;
 		}
 
 		char** ppInput;
@@ -51,6 +56,7 @@ void* threadFunc(void* arg) {
 		split(' ', buf, ppInput);
 		if (!strcmp(ppInput[0],"cd")) {
 			changeDir(ppInput[1], &pDir);
+			write(*connectionFd, "test", 4);
 		}
 		else if (!strcmp(ppInput[0],"put")) {
 			char pPath[PATH_MAX];
@@ -71,9 +77,10 @@ void* threadFunc(void* arg) {
 			//get(ppInput[1]);
 		}
 		try_(write(*connectionFd, ppInput[0], arrayLen(ppInput[0])), "Couldn't send message");
-		try_(write(*connectionFd, " ", arrayLen(ppInput)), "Couldn't send message");
+		try_(write(*connectionFd, " ", 1), "Couldn't send message");
 		if(arrayLen(ppInput[1]) != 0) 
 			try_(write(*connectionFd, ppInput[1], arrayLen(ppInput[1])), "Couldn't send message");
+		try_(write(*connectionFd, "\n", 1), "Couldn't send message");
 	}
 
 	try_(close(*connectionFd), "could not close socket");

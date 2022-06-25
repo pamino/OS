@@ -147,6 +147,7 @@ int searchnDeleteDone(Future* future) {
 			Future* temp = pJobDone[arrayLen(pJobDone)-1];
 			pJobDone[arrayLen(pJobDone)-1] = pJobDone[i];
 			pJobDone[i] = temp;
+			arrayPop(pJobDone);
 
 			pthread_mutex_unlock(&mJobDone);
 			return 1;

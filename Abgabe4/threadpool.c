@@ -13,15 +13,17 @@ static pthread_mutex_t mJobQueue;
 static Future** pJobDone;
 static pthread_mutex_t mJobDone;
 
+static pthread_mutex_t mserialize;
+
 // static pthread_t* pThreads;
 // static pthread_mutex_t mThreads;
 
-static sem_t end;
+static pthread_t* pThreadHandles;
 
 void serialize(Future* fut);
 
 void* workerThread(void* arg);
-void* managerThread(void* pArg);
+void* starterThread(void* pArg);
 
 void pushJob(Future* future);
 Future* popJob();
@@ -30,42 +32,59 @@ int countJobs();
 void pushDone(Future* future);
 int searchnDeleteDone(Future* future);
 
-static int numThreads;
 
 //------ tpInit ------
 int tpInit(size_t size) {
-	numThreads = size;
-	sem_init(&end, 0, 0);
+	int numThreads = size;
 
 	pthread_mutex_init(&mJobQueue, NULL);
 	pthread_mutex_init(&mJobDone, NULL);
 
 	arrayInit(pJobQueue);
 	arrayInit(pJobDone);
+	arrayInit(pThreadHandles);
 
-	pthread_t m;
-	pthread_create(&m, NULL, managerThread, &numThreads);
-	pthread_detach(m);
-	pthread_join(m, NULL);
+	pthread_t pThreadPool[numThreads];
+	for (int i = 0; i < numThreads; ++i) {
+		pthread_create(&pThreadPool[i], NULL, workerThread, NULL);
+		arrayPush(pThreadHandles) = pThreadPool[i];
+	}
 	return 0;
 }
 
 //------ tpRelease ------
 void tpRelease(void) {
-	sem_post(&end);
+
+	for (int i = 0; i < arrayLen(pThreadHandles); ++i) {
+		pthread_cancel(pThreadHandles[i]);
+		pthread_join(pThreadHandles[i], NULL);
+	}
 	
 	arrayRelease(pJobDone);
 	arrayRelease(pJobQueue);
-	//arrayRelease(pThreads);
+	arrayRelease(pThreadHandles);
 
 	pthread_mutex_destroy(&mJobDone);
 	pthread_mutex_destroy(&mJobQueue);
-	sem_destroy(&end);
+
 }
 
 //------ tpAsync ------
 void tpAsync(Future* pFuture) {
 	pushJob(pFuture);
+}
+
+//------ workOnce ------
+void workOnce() {
+	Future* job;
+	job = popJob();
+	if (job) {
+		job->fn(job);
+		pushDone(job);
+	}
+	else {
+		usleep(1);
+	}
 }
 
 //------ tpAwait ------
@@ -75,17 +94,18 @@ void tpAwait(Future* pFuture) {
 			return;
 		} 
 		else {
-			int onlyOneJob = 1;
-			workerThread((void*)&onlyOneJob);
+			workOnce();
 		}
 	}
 }
 
 //------ serialize ------
 void serialize(Future* fut) {
-	static atomic_int counter;
+	static int counter = 0;
+	pthread_mutex_lock(&mserialize);
 	++counter;
 	fut->id = counter;
+	pthread_mutex_unlock(&mserialize);
 }
 
 //------ workerThread ------
@@ -100,27 +120,10 @@ void* workerThread(void* arg) {
 		else {
 			usleep(1);
 		}
-		if (*(int*)arg) {
-			return NULL;
-		}
-		//pthread_testcancel();
+		pthread_testcancel();
+		printf("running\n");
 	}
 	return NULL;
-}
-
-//------ managerThread ------
-void* managerThread(void* pArg) {
-	pthread_t pThreadPool[numThreads];
-	for (int i = 0; i < numThreads; ++i) {
-		int neverEnd = 0;
-		pthread_create(&pThreadPool[i], NULL, workerThread, (void*)&neverEnd);
-	}
-
-	sem_wait(&end);
-	for (int i = 0; i < numThreads; ++i) {
-		pthread_cancel(pThreadPool[i]);
-		pthread_join(pThreadPool[i], NULL);
-	}
 }
 
 //------ pushJob ------
@@ -134,7 +137,10 @@ void pushJob(Future* pJob) {
 //------ popJob ------
 Future* popJob() {
 	pthread_mutex_lock(&mJobQueue);
-	if (arrayLen(pJobQueue) == 0) return NULL;
+	if (arrayLen(pJobQueue) == 0) {
+		pthread_mutex_unlock(&mJobQueue);
+		return NULL;
+	}
 	Future* ret = arrayPop(pJobQueue);
 	pthread_mutex_unlock(&mJobQueue);
 	return ret;

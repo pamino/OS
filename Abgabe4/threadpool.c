@@ -16,7 +16,6 @@ static pthread_mutex_t mJobDone;
 // static pthread_t* pThreads;
 // static pthread_mutex_t mThreads;
 
-static pthread_t main;
 static sem_t end;
 
 void serialize(Future* fut);
@@ -31,23 +30,27 @@ int countJobs();
 void pushDone(Future* future);
 int searchnDeleteDone(Future* future);
 
+static int numThreads;
+
 //------ tpInit ------
 int tpInit(size_t size) {
-	uint numThreads = 0;
-	numThreads = (uint) size;
+	numThreads = size;
 	sem_init(&end, 0, 0);
 
 	pthread_mutex_init(&mJobQueue, NULL);
 	arrayInit(pJobQueue);
 	arrayInit(pJobDone);
-	pthread_create(&main, NULL, managerThread, &numThreads);
+
+	pthread_t m;
+	pthread_create(&m, NULL, managerThread, &numThreads);
+
 	return 0;
 }
 
 //------ tpRelease ------
 void tpRelease(void) {
 	sem_post(&end);
-
+	
 	arrayRelease(pJobDone);
 	arrayRelease(pJobQueue);
 	//arrayRelease(pThreads);
@@ -84,31 +87,32 @@ void serialize(Future* fut) {
 void* workerThread(void* arg) {
 	Future* job;
 	while (1) {
-		if (job = popJob()) {
+		job = popJob();
+		if (job) {
 			job->fn(job);
 			pushDone(job);
 		}
 		else {
 			usleep(1);
 		}
-		if (*(int*)arg) return NULL;
-		pthread_testcancel();
+		if (*(int*)arg) {
+			return NULL;
+		}
+		//pthread_testcancel();
 	}
 	return NULL;
 }
 
 //------ managerThread ------
 void* managerThread(void* pArg) {
-	uint threadCount = *(uint*) pArg;
-	pthread_t pThreadPool[threadCount];
-
-	for (int i = 0; i < threadCount; ++i) {
+	pthread_t pThreadPool[numThreads];
+	for (int i = 0; i < numThreads; ++i) {
 		int neverEnd = 0;
 		pthread_create(&pThreadPool[i], NULL, workerThread, (void*)&neverEnd);
 	}
 
 	sem_wait(&end);
-	for (int i = 0; i < threadCount; ++i) {
+	for (int i = 0; i < numThreads; ++i) {
 		pthread_cancel(pThreadPool[i]);
 		pthread_join(pThreadPool[i], NULL);
 	}

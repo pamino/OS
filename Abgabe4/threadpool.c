@@ -38,12 +38,15 @@ int tpInit(size_t size) {
 	sem_init(&end, 0, 0);
 
 	pthread_mutex_init(&mJobQueue, NULL);
+	pthread_mutex_init(&mJobDone, NULL);
+
 	arrayInit(pJobQueue);
 	arrayInit(pJobDone);
 
 	pthread_t m;
 	pthread_create(&m, NULL, managerThread, &numThreads);
-
+	pthread_detach(m);
+	pthread_join(m, NULL);
 	return 0;
 }
 
@@ -55,6 +58,8 @@ void tpRelease(void) {
 	arrayRelease(pJobQueue);
 	//arrayRelease(pThreads);
 
+	pthread_mutex_destroy(&mJobDone);
+	pthread_mutex_destroy(&mJobQueue);
 	sem_destroy(&end);
 }
 

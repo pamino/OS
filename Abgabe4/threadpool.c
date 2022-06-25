@@ -121,7 +121,6 @@ void* workerThread(void* arg) {
 			usleep(1);
 		}
 		pthread_testcancel();
-		printf("running\n");
 	}
 	return NULL;
 }

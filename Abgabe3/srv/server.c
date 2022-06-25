@@ -23,7 +23,8 @@ void makeDir(const char* pArgument, char** ppDir, char* pRet) {
 void writePath(const char* pStartDir, const char* pDir) {
 	char pRelPath[PATH_MAX];
 	relate(pRelPath, pStartDir, pDir);
-	write(1, pRelPath, sizeof(pRelPath));
+	write(1, pStartDir, sizeof(pStartDir));
+	//write(1, pRelPath, sizeof(pRelPath));
 	write(1, ">", 1);
 }
 
@@ -38,7 +39,8 @@ void* threadFunc(void* arg) {
 	int stop[2] = {-1};
 
 	getcwd(pStartDir,sizeof(pStartDir));
-	strcpy(pDir, pStartDir);
+	//strcpy(pDir, pStartDir);
+	printf(pStartDir);
 	dup2(*connectionFd, 0);
 	dup2(*connectionFd, 1);
 
@@ -104,7 +106,7 @@ int main()
 	setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, (char*)&sockopt, sizeof(sockopt));
 
 	try_(bind(socketFd, (struct sockaddr*)&srv_addr, sad_sz), "Couldn't bind socket");
-	try_(listen(socketFd, 1), "Couldn't listen to the socket");
+	try_(listen(socketFd, 100), "Couldn't listen to the socket");
 	while(1) {
 		int* connectionFd = (int*) malloc(sizeof(int));
 		*connectionFd = try_(accept(socketFd, (struct sockaddr *)&cli_addr, &sad_sz), "Couldn't accept incoming connection");

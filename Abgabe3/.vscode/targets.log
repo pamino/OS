@@ -1,0 +1,465 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.2.1
+ 
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2016 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Sat Jun 25 10:37:21 2022
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+DESKTOP_SESSION = lxqt
+# default
+.SHELLFLAGS := -c
+# environment
+XDG_SESSION_CLASS = user
+# environment
+XDG_SESSION_TYPE = x11
+# environment
+VSCODE_LOG_NATIVE = false
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+XAUTHORITY = /home/sar-user/.Xauthority
+# environment
+GDMSESSION = lxqt
+# default
+MAKE_VERSION := 4.2.1
+# makefile
+CURDIR := /media/sf_shared/OS/Abgabe3
+# makefile
+SHELL = /bin/sh
+# environment
+GDM_LANG = de_DE
+# environment
+VSCODE_NLS_CONFIG = {"locale":"de","availableLanguages":{},"_languagePackSupport":true}
+# environment
+_ = /usr/share/code/code
+# makefile (from 'Makefile', line 10)
+CFLAGS = -std=gnu11 -Wno-unused-result -c -g -Os -Wall -MMD -MP -I "lib"
+# environment
+XDG_CONFIG_DIRS = /etc/xdg/xdg-lxqt:/etc/xdg:/etc:/usr/share
+# environment
+GTK_OVERLAY_SCROLLING = 0
+# makefile (from 'Makefile', line 1)
+MAKEFILE_LIST :=  Makefile
+# automatic
+@F = $(notdir $@)
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+MANDATORY_PATH = /usr/share/gconf/lxqt.mandatory.path
+# environment
+XDG_DATA_DIRS = /usr/share/lxqt:/usr/local/share:/usr/share:/var/lib/snapd/desktop
+# makefile (from 'Makefile', line 15)
+SHARED_OBJ = $(SHARED_SRC:%.c=%.o)
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+LESSOPEN = | /usr/bin/lesspipe %s
+# environment
+VSCODE_CWD = /home/sar-user
+# environment
+XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session0
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+# makefile (from 'Makefile', line 20)
+CLIENT_DEP = $(CLIENT_SRC:%.c=%.d)
+# environment
+GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
+# environment
+LXQT_SESSION_CONFIG = session
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# makefile (from 'Makefile', line 23)
+SERVER_OBJ = $(SERVER_SRC:%.c=%.o)
+# environment
+XDG_MENU_PREFIX = lxqt-
+ 
+# environment
+VSCODE_LOG_STACK = false
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# makefile (from 'Makefile', line 8)
+LIB = libshared.a
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# environment
+XDG_GREETER_DATA_DIR = /var/lib/lightdm-data/sar-user
+# environment
+LS_COLORS = 
+# environment
+XDG_SESSION_DESKTOP = lxqt
+# environment
+SSH_AUTH_SOCK = /tmp/ssh-j9Rky4DgEafT/agent.779
+# automatic
+%F = $(notdir $%)
+# environment
+DISPLAY = :0
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+PWD = /media/sf_shared/OS/Abgabe3
+# environment
+QT_QPA_PLATFORMTHEME = lxqt
+# default
+.LOADED := 
+# environment
+XDG_SEAT = seat0
+# environment
+SSH_AGENT_PID = 868
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = LXQt
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /home/sar-user
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+XDG_CACHE_HOME = /home/sar-user/.cache
+# environment
+LESSCLOSE = /usr/bin/lesspipe %s %s
+# environment
+VSCODE_CODE_CACHE_PATH = /home/sar-user/.config/Code/CachedData/dfd34e8260c270da74b5c2d86d61aee4b6d56977
+# makefile (from 'Makefile', line 6)
+TAR = libshared.a client server
+# environment
+LOGNAME = sar-user
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# makefile (from 'Makefile', line 16)
+SHARED_DEP = $(SHARED_SRC:%.c=%.d)
+# environment
+ 
+XDG_VTNR = 7
+# environment
+MAKELEVEL := 0
+# makefile (from 'Makefile', line 18)
+CLIENT_SRC = $(wildcard cli/*.c)
+# makefile (from 'Makefile', line 14)
+SHARED_SRC = $(wildcard lib/*.c)
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 0
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-4321ecbd-781e-4c24-bc51-a69a69a04730.sock
+# environment
+XDG_SESSION_ID = c1
+# environment
+USER = sar-user
+# makefile
+.DEFAULT_GOAL := client
+# environment
+XDG_CURRENT_DESKTOP = LXQt
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+SAL_USE_VCLPLUGIN = kde4
+# makefile (from 'Makefile', line 11)
+LFLAGS = -pthread
+# default
+MAKE_COMMAND := make
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# environment
+LANGUAGE = de_DE
+# environment
+XDG_SEAT_PATH = /org/freedesktop/DisplayManager/Seat0
+# makefile (from 'Makefile', line 7)
+PCK = lab-3.zip
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-9cc9e1fe-1.66.2-main.sock
+# makefile (from 'Makefile', line 24)
+SERVER_DEP = $(SERVER_SRC:%.c=%.d)
+# makefile
+MAKEFLAGS = pqrR
+# makefile (from 'Makefile', line 22)
+SERVER_SRC = $(wildcard srv/*.c)
+# environment
+MFLAGS = -pqrR
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+GTK_CSD = 0
+# environment
+GDK_BACKEND = x11
+# environment
+QT_PLATFORM_PLUGIN = lxqt
+# automatic
++F = $(notdir $+)
+# environment
+NO_AT_BRIDGE = 1
+# environment
+DEFAULTS_PATH = /usr/share/gconf/lxqt.default.path
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+XDG_CONFIG_HOME = /home/sar-user/.config
+# environment
+LC_ALL = C
+# makefile (from 'Makefile', line 19)
+CLIENT_OBJ = $(CLIENT_SRC:%.c=%.o)
+# automatic
+^F = $(notdir $^)
+# environment
+XDG_DATA_HOME = /home/sar-user/.local/share
+# default
+SUFFIXES := 
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# default
+.RECIPEPREFIX := 
+# environment
+ 
+LANG = C
+# makefile (from 'Makefile', line 12)
+AFLAGS = rcs
+# environment
+VSCODE_PID = 1124
+# variable set hash-table stats:
+# Load=115/1024=11%, Rehash=0, Collisions=12/160=8%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# lib (device 49, inode 29): 6 files, no impossibilities.
+# . (device 49, inode 18): 10 files, no impossibilities.
+# cli (device 49, inode 24): 3 files, no impossibilities.
+# srv (device 49, inode 22): 5 files, no impossibilities.
+
+# 24 files, no impossibilities in 4 directories.
+
+# Implicit Rules
+
+%.o: %.c
+#  recipe to execute (from 'Makefile', line 29):
+	$(CC) $(CFLAGS) $< -o $@
+
+# 1 implicit rules, 0 (0.0%) terminal.
+
+# Files
+
+pack: clean
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 50):
+	zip -r $(PCK) cli srv lib Makefile -x "*/.*"
+
+all: libshared.a client server
+#  Phony target (prerequisite of .PHONY).
+#  Command line target.
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/5=0%
+
+client: cli/client.o libshared.a
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 32):
+	$(CC) -o $@ $^ $(LFLAGS)
+
+.PHONY: all run pack clean
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+lib/array.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+cli/client.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+srv/server.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+lib/lib.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-14 21:42:56.3787127
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-04-19 13:29:57
+#  File has been updated.
+#  Successfully updated.
+
+server: srv/server.o libshared.a
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 35):
+	@if [ -e .srv_pid ]; then kill `cat .srv_pid`; $(RM) $(RMFILES) .srv_pid; fi
+	$(CC) -o $@ $^ $(LFLAGS)
+
+# Not a target:
+cli/client.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+.SILENT: run
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+lib/lib.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+run: all .srv_pid
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 47):
+	./client
+
+clean:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 53):
+	@if [ -e .srv_pid ]; then kill `cat .srv_pid`; $(RM) $(RMFILES) .srv_pid; fi
+	$(RM) $(RMFILES) .srv_pid $(TAR) $(PCK) $(CLIENT_OBJ) $(CLIENT_DEP) $(SERVER_OBJ) $(SERVER_DEP) $(SHARED_OBJ) $(SHARED_DEP)
+
+.srv_pid:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 44):
+	./server& echo $$! > .srv_pid
+
+libshared.a: lib/lib.o lib/array.o
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+ 
+# Load=0/32=0%, Rehash=0, Collisions=0/5=0%
+#  recipe to execute (from 'Makefile', line 39):
+	$(AR) $(AFLAGS) $@ $^
+
+# Not a target:
+lib/array.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+lib/lib.o: lib/lib.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'lib/lib'
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := lib/lib.o
+# automatic
+# % := 
+# automatic
+# * := lib/lib
+# automatic
+# + := lib/lib.c
+# automatic
+# | := 
+# automatic
+# < := lib/lib.c
+# automatic
+# ^ := lib/lib.c
+# automatic
+# ? := lib/lib.c
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/15=7%
+#  recipe to execute (from 'Makefile', line 29):
+	$(CC) $(CFLAGS) $< -o $@
+
+# Not a target:
+srv/server.d:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# files hash-table stats:
+# Load=22/1024=2%, Rehash=0, Collisions=0/62=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 43 / storage = 361 B / avg = 8 B
+# current buf: size = 8162 B / used = 361 B / count = 43 / avg = 8 B
+
+# strcache performance: lookups = 88 / hit rate = 51%
+# hash-table stats:
+# Load=43/8192=1%, Rehash=0, Collisions=4/88=5%
+# Finished Make data base on Sat Jun 25 10:37:21 2022
+
+ 

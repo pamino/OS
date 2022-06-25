@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <stdio.h>
 #include "array.h"
 
 static Future** pJobQueue;
@@ -18,6 +19,19 @@ static pthread_mutex_t mJobDone;
 static pthread_t main;
 static sem_t end;
 
+void serialize(Future* fut);
+
+void* workerThread(void* arg);
+void* managerThread(void* pArg);
+
+void pushJob(Future* future);
+Future* popJob();
+int countJobs();
+
+void pushDone(Future* future);
+int searchnDeleteDone(Future* future);
+
+//------ tpInit ------
 int tpInit(size_t size) {
 	uint numThreads = 0;
 	numThreads = (uint) size;
@@ -25,10 +39,12 @@ int tpInit(size_t size) {
 
 	pthread_mutex_init(&mJobQueue, NULL);
 	arrayInit(pJobQueue);
+	arrayInit(pJobDone);
 	pthread_create(&main, NULL, managerThread, &numThreads);
 	return 0;
 }
 
+//------ tpRelease ------
 void tpRelease(void) {
 	sem_post(&end);
 
@@ -39,16 +55,17 @@ void tpRelease(void) {
 	sem_destroy(&end);
 }
 
+//------ tpAsync ------
 void tpAsync(Future* pFuture) {
-	push(*pFuture);
+	pushJob(pFuture);
 }
 
+//------ tpAwait ------
 void tpAwait(Future* pFuture) {
 	while (1) {
-		if (searchDone(pFuture)){
-			popDone(pFuture);
+		if (searchnDeleteDone(pFuture)){
 			return;
-		}
+		} 
 		else {
 			int onlyOneJob = 1;
 			workerThread((void*)&onlyOneJob);
@@ -56,80 +73,91 @@ void tpAwait(Future* pFuture) {
 	}
 }
 
+//------ serialize ------
 void serialize(Future* fut) {
 	static atomic_int counter;
 	++counter;
 	fut->id = counter;
 }
 
-
+//------ workerThread ------
 void* workerThread(void* arg) {
 	Future* job;
 	while (1) {
 		if (job = popJob()) {
-			serialize(job);
-
-			pthread_t t;
-			pthread_create(t, NULL, job->fn, job);
-			pthread_join(t, NULL);
+			job->fn(job);
 			pushDone(job);
 		}
 		else {
-			nsleep(1000);
+			usleep(1);
 		}
 		if (*(int*)arg) return NULL;
+		pthread_testcancel();
 	}
 	return NULL;
 }
 
-
+//------ managerThread ------
 void* managerThread(void* pArg) {
 	uint threadCount = *(uint*) pArg;
 	pthread_t pThreadPool[threadCount];
 
 	for (int i = 0; i < threadCount; ++i) {
 		int neverEnd = 0;
-		pthread_create(pThreadPool[i], NULL, workerThread, (void*)&neverEnd);
+		pthread_create(&pThreadPool[i], NULL, workerThread, (void*)&neverEnd);
 	}
 
 	sem_wait(&end);
-
-
+	for (int i = 0; i < threadCount; ++i) {
+		pthread_cancel(pThreadPool[i]);
+		pthread_join(pThreadPool[i], NULL);
+	}
 }
 
-void pushJob(Future* future) {
+//------ pushJob ------
+void pushJob(Future* pJob) {
+	serialize(pJob);
 	pthread_mutex_lock(&mJobQueue);
-	arrayPush(pJobQueue) = future;
+	arrayPush(pJobQueue) = pJob;
 	pthread_mutex_unlock(&mJobQueue);
 }
 
+//------ popJob ------
 Future* popJob() {
 	pthread_mutex_lock(&mJobQueue);
 	if (arrayLen(pJobQueue) == 0) return NULL;
-	Future* ret = arrayTop(pJobQueue);
-	arrayPop(pJobQueue);
+	Future* ret = arrayPop(pJobQueue);
 	pthread_mutex_unlock(&mJobQueue);
 	return ret;
 }
 
+//------ pushDone ------
 void pushDone(Future* future) {
 	pthread_mutex_lock(&mJobDone);
 	arrayPush(pJobDone) = future;
 	pthread_mutex_unlock(&mJobDone);
 }
 
-int searchDone(Future* future) {
+//------ searchnDeleteDone ------
+int searchnDeleteDone(Future* future) {
 	pthread_mutex_lock(&mJobDone);
 	for (int i = 0; i < arrayLen(pJobDone); ++i) {
 		if (pJobDone[i]->id == future->id) {
+			//swap elements
+			Future* temp = pJobDone[arrayLen(pJobDone)-1];
+			pJobDone[arrayLen(pJobDone)-1] = pJobDone[i];
+			pJobDone[i] = temp;
+
 			pthread_mutex_unlock(&mJobDone);
 			return 1;
 		}
 	}
+
 	pthread_mutex_unlock(&mJobDone);
 	return 0;
 }
 
+//------ countJobs ------
 int countJobs() {
 	pthread_mutex_lock(&mJobQueue);
 	int ret = arrayLen(pJobQueue);

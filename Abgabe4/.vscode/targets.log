@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat Jun 25 10:37:36 2022
+# Make data base, printed on Sun Jun 26 21:25:39 2022
 
 # Variables
 
@@ -54,8 +54,8 @@ CFLAGS = -std=gnu11 -c -g -Os -Wall -MMD -MP
 XDG_CONFIG_DIRS = /etc/xdg/xdg-lxqt:/etc/xdg:/etc:/usr/share
 # environment
 GTK_OVERLAY_SCROLLING = 0
-# makefile (from 'Makefile', line 1)
-MAKEFILE_LIST :=  Makefile
+# makefile (from 'array.d', line 1)
+MAKEFILE_LIST :=  Makefile threadpool.d quicksort.d main.d array.d
 # automatic
 @F = $(notdir $@)
 # 'override' directive
@@ -101,7 +101,7 @@ LS_COLORS =
 # environment
 XDG_SESSION_DESKTOP = lxqt
 # environment
-SSH_AUTH_SOCK = /tmp/ssh-j9Rky4DgEafT/agent.779
+SSH_AUTH_SOCK = /tmp/ssh-Jbp1wesWg3CQ/agent.872
 # automatic
 %F = $(notdir $%)
 # environment
@@ -117,7 +117,7 @@ QT_QPA_PLATFORMTHEME = lxqt
 # environment
 XDG_SEAT = seat0
 # environment
-SSH_AGENT_PID = 868
+SSH_AGENT_PID = 961
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = LXQt
 # environment
@@ -153,13 +153,13 @@ MAKECMDGOALS := all
 # environment
 SHLVL = 0
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-cc0244cb-93c0-4e1a-8af1-f7b5ea09210e.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-01d32860-62b0-4576-8f75-1055042a1398.sock
 # environment
 XDG_SESSION_ID = c1
 # environment
 USER = sar-user
 # makefile
-.DEFAULT_GOAL := threadpool
+.DEFAULT_GOAL := threadpool.o
 # environment
 XDG_CURRENT_DESKTOP = LXQt
 # automatic
@@ -223,9 +223,9 @@ CHROME_DESKTOP = code-url-handler.desktop
 # environment
 LANG = C
 # environment
-VSCODE_PID = 1124
+VSCODE_PID = 1174
 # variable set hash-table stats:
-# Load=107/1024=10%, Rehash=0, Collisions=12/146=8%
+# Load=107/1024=10%, Rehash=0, Collisions=12/154=8%
 
 # Pattern-specific Variable Values
 
@@ -233,9 +233,9 @@ VSCODE_PID = 1124
 
 # Directories
 
-# . (device 49, inode 50): 10 files, no impossibilities.
+# . (device 51, inode 18): 21 files, no impossibilities.
 
-# 10 files, no impossibilities in 1 directories.
+# 21 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -248,7 +248,12 @@ VSCODE_PID = 1124
 # Files
 
 # Not a target:
-quicksort.o:
+array.c:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+quicksort.o: quicksort.c threadpool.h
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -274,13 +279,25 @@ all: threadpool
 .PHONY: all run pack clean
 #  Implicit rule search has not been done.
 #  Modification time never checked.
+ 
+#  File has not been updated.
+
+array.h:
+#  Implicit rule search has been done.
+#  Last modified 2022-04-19 13:33:23
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+main.c:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
 #  File has not been updated.
 
 # Not a target:
 threadpool.c:
 #  Implicit rule search has been done.
- 
-#  Last modified 2020-06-08 17:22:25
+#  Last modified 2022-06-25 20:12:00.2156812
 #  File has been updated.
 #  Successfully updated.
 
@@ -297,18 +314,30 @@ Makefile:
 #  Successfully updated.
 
 # Not a target:
+quicksort.c:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
 array.d:
 #  Implicit rule search has been done.
-#  File does not exist.
+#  Last modified 2022-06-25 15:28:16.4982695
 #  File has been updated.
-#  Failed to be updated.
+#  Successfully updated.
+
+threadpool.h:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-25 15:07:20.6355536
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
 main.d:
 #  Implicit rule search has been done.
-#  File does not exist.
+#  Last modified 2022-06-25 20:09:32.9042245
 #  File has been updated.
-#  Failed to be updated.
+#  Successfully updated.
 
 # Not a target:
 .DEFAULT:
@@ -319,12 +348,11 @@ main.d:
 # Not a target:
 threadpool.d:
 #  Implicit rule search has been done.
-#  File does not exist.
+#  Last modified 2022-06-25 20:08:43.2060493
 #  File has been updated.
-#  Failed to be updated.
+#  Successfully updated.
 
-# Not a target:
-array.o:
+array.o: array.c array.h
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -348,9 +376,9 @@ clean:
 # Not a target:
 quicksort.d:
 #  Implicit rule search has been done.
-#  File does not exist.
+#  Last modified 2022-06-25 19:45:16.7621521
 #  File has been updated.
-#  Failed to be updated.
+#  Successfully updated.
 
 bench: threadpool.o quicksort.o array.o
 #  Implicit rule search has not been done.
@@ -359,15 +387,14 @@ bench: threadpool.o quicksort.o array.o
 #  recipe to execute (from 'Makefile', line 25):
 	$(CC) $(LFLAGS) -o $@ $^
 
-# Not a target:
-main.o:
+main.o: main.c threadpool.h
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 
 threadpool: threadpool.o main.o array.o
 #  Implicit rule search has not been done.
-#  File does not exist.
+#  Last modified 2022-06-25 20:09:32.9921091
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
@@ -375,10 +402,10 @@ threadpool: threadpool.o main.o array.o
 #  recipe to execute (from 'Makefile', line 20):
 	$(CC) $(LFLAGS) -o $@ $^
 
-threadpool.o: threadpool.c
+threadpool.o: threadpool.c threadpool.c threadpool.h array.h
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'threadpool'
-#  File does not exist.
+#  Last modified 2022-06-25 20:08:43.2216893
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # automatic
@@ -388,13 +415,13 @@ threadpool.o: threadpool.c
 # automatic
 # * := threadpool
 # automatic
-# + := threadpool.c
+# + := threadpool.c threadpool.c threadpool.h array.h
 # automatic
 # | := 
 # automatic
 # < := threadpool.c
 # automatic
-# ^ := threadpool.c
+# ^ := threadpool.c threadpool.h array.h
 # automatic
 # ? := threadpool.c
 # variable set hash-table stats:
@@ -403,19 +430,19 @@ threadpool.o: threadpool.c
 	$(CC) $(CFLAGS) $< -o $@
 
 # files hash-table stats:
-# Load=19/1024=2%, Rehash=0, Collisions=0/54=0%
+# Load=24/1024=2%, Rehash=0, Collisions=0/72=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 31 / storage = 265 B / avg = 8 B
-# current buf: size = 8162 B / used = 265 B / count = 31 / avg = 8 B
+# strcache buffers: 1 (0) / strings = 32 / storage = 272 B / avg = 8 B
+# current buf: size = 8162 B / used = 272 B / count = 32 / avg = 8 B
 
-# strcache performance: lookups = 61 / hit rate = 49%
+# strcache performance: lookups = 99 / hit rate = 67%
 # hash-table stats:
-# Load=31/8192=0%, Rehash=0, Collisions=1/61=2%
-# Finished Make data base on Sat Jun 25 10:37:36 2022
+# Load=32/8192=0%, Rehash=0, Collisions=1/99=1%
+# Finished Make data base on Sun Jun 26 21:25:39 2022
 
  

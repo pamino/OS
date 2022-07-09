@@ -1,8 +1,5 @@
 make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/media/sf_shared/OS/Abgabe4'
 cc -std=gnu11 -c -g -Os -Wall -MMD -MP threadpool.c -o threadpool.o
-cc -std=gnu11 -c -g -Os -Wall -MMD -MP main.c -o main.o
-cc -std=gnu11 -c -g -Os -Wall -MMD -MP array.c -o array.o
-cc -pthread -o threadpool threadpool.o main.o array.o
 make: Leaving directory '/media/sf_shared/OS/Abgabe4'
  

@@ -119,4 +119,25 @@ unsigned int bitsetGet(const Bitset* set, unsigned bit) {
 	return (set[bit / bitsPerWord] >> (bit % bitsPerWord)) & 1;
 }
 
+void  setBit(int arr[], int k) {
+	arr[k / 32] |= 1 << (k % 32); 
+}
+
+void  clearBit(int arr[], int k) {
+	arr[k / 32] &= ~(1 << (k % 32));
+}
+
+int testBit(int arr[], int k) {
+	return ((arr[k / 32] & (1 << (k % 32))) != 0);
+}
+
+void cpyBits(int arrA[], int arrB[], int len) {
+	for (int i = 0; i < len; ++i) {
+		if(testBit(arrB, i)) 
+			setBit(arrA, i);
+		else 
+			clearBit(arrA, i);
+	}
+}
+
 #endif	/* BITSET_H_INCLUDED */

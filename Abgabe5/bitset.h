@@ -131,13 +131,30 @@ int testBit(int arr[], int k) {
 	return ((arr[k / 32] & (1 << (k % 32))) != 0);
 }
 
-void cpyBits(int arrA[], int arrB[], int len) {
+void cpyBits(Bitset* A, Bitset B, int len) {
 	for (int i = 0; i < len; ++i) {
-		if(testBit(arrB, i)) 
-			setBit(arrA, i);
+		if(bitsetGet(&B, i)) 
+			bitsetSet(A, i);
 		else 
-			clearBit(arrA, i);
+			bitsetClear(A, i);
 	}
+}
+
+void printBits(int arr[], int size, int rows) {
+	int counter = 0;
+	for(int i = 0; i<size; ++i, ++counter) {
+		if(counter == rows) {
+			counter = 0;
+			printf("\n");
+		}
+		if (testBit(arr, i)) {
+			printf("\x1B[31m" "1" "\033[0m");
+		}
+		else {
+			printf("0");
+		}
+	}
+	printf("\n");
 }
 
 #endif	/* BITSET_H_INCLUDED */

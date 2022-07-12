@@ -2,25 +2,25 @@
 #include "memory.h"
 
 int main() {
-	int *array;
+	int* array[4];
 	mem_init();
+
+	//Testfall 1
+	for(int j = 0; j < 100; ++j) {
+		array[0] = mem_alloc(10*  sizeof(int));
+		array[1] = mem_alloc(10 * sizeof(int));
+		array[2] = mem_alloc(10 * sizeof(int));
+		//array[3] = mem_alloc(10 * sizeof(int));
+		array[1] = mem_realloc(array[1], 20 * sizeof(int));
+		array[2] = mem_realloc(array[2], 20 * sizeof(int));
+		array[0] = mem_realloc(array[0], 20 * sizeof(int));
+		//array[3] = mem_realloc(array[3], 20 * sizeof(int));
+		mem_free(array[1]);
+		mem_free(array[2]);
+		mem_free(array[0]);
+		//mem_free(array[0]);
+		printFreeMem();
+	}
 	
-	array = mem_alloc(sizeof(int)*10);
-	if (array == NULL)
-		perror("mem_alloc()"), exit(-1);
 	
-	for (int i = 0; i < 10; i++)
-		array[i] = i;
-	
-	array = mem_realloc(array, sizeof(int)*20);
-	if (array == NULL)
-		perror("mem_realloc()"), exit(-1);
-	
-	for (int i = 10; i < 20; i++)
-		array[i] = 20-i;
-	
-	for (int i = 20; i --> 0;)
-		printf("%i\n", array[i]);
-	
-	mem_free(array);
 }

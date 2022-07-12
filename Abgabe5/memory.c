@@ -27,7 +27,7 @@ static char heap[HEAP_SIZE];
 
 static MemBlock freeMem_[ORDER_MAX+1];
 static void* freeMemDyn_[ORDER_MAX+1];
-static int tree_[TREE_SIZE];
+static unsigned tree_[TREE_SIZE];
 
 int findEle(int pHandle, int* pos, Bitset* bits);
 void mergeBuddies(MemBlock block, int power);
@@ -43,6 +43,14 @@ int traverseRight(int num);
 int traverseLeft(int num);
 int bits2tree(Bitset bits, int level);
 
+void printFreeMem() {
+	int free = 0 ;
+	for (int i = 0; i < ORDER_MAX + 1; ++i) {
+		free += (freeMem_[i].high - freeMem_[i].low);
+	}
+	printf("free Memory: %i\n", free);
+}
+
 void mem_init() {
 	freeMem_[ORDER_MAX] = (MemBlock){.low=0, .high=HEAP_SIZE, .set=1, .bits=0};
 	for (int i =0; i < ORDER_MAX; ++i) {
@@ -55,7 +63,7 @@ void* mem_alloc(size_t size) {
 		goto fail;
 
 	int power = 0;
-	while (size != 1) {
+	while (size != 0) {
 		size = size >> 1;
 		++power;
 	}
@@ -87,6 +95,7 @@ void* mem_alloc(size_t size) {
 		++level;
 	}
 	//printf("setting Bit: %i\n", bits2tree(traverse, level));
+	int bit[1] = { traverse };
 	setBit(tree_, bits2tree(traverse, level));
 	//printf ("return pHandle: %i\n", MemLow);
 	return &heap[MemLow];
@@ -116,6 +125,7 @@ void* mem_realloc(void *oldptr, size_t new_size) {
 
 void mem_free(void *ptr) {
 	int pHandle = (char*)ptr - &heap[0];
+	//printf("freeing pHandle: %i\n", pHandle);
 	int pos;
 	int power;
 	Bitset bits;
@@ -133,7 +143,6 @@ void mem_dump(FILE *file) {
 }
 
 int findEle(int pHandle, int* pos, Bitset* bits) {
-	//printf("find pHandle: %i\n", pHandle);
 	Bitset traverse = 0;
 	int level = 0;
 	int low = 0;
@@ -141,7 +150,7 @@ int findEle(int pHandle, int* pos, Bitset* bits) {
 	while(level <= ORDER_MAX) {
 		int split = (low + high)/2;
 		if (pHandle == low) {
-			for (*pos = bits2tree(traverse, level); *pos < TREE_SIZE * 32; *pos = traverseLeft(*pos), ++level) {
+			for (*pos = bits2tree(traverse, level); *pos <= TREE_SIZE * 32; *pos = traverseLeft(*pos), ++level) {
 				//printBits(tree_, 10, 10);
 				//printf("testing Bit: %i\n", *pos);
 				if (testBit(tree_, *pos)) {
@@ -177,13 +186,15 @@ void mergeBuddies(MemBlock block, int power) {
 		}
 		int budNum = blockAdrL / blockSize;
 		int buddyAdress = budNum % 2 == 0 ? blockAdrL + blockSize : blockAdrL - blockSize;
-
+		Bitset buddyBits = -1;
 		if ((freeMem_[i].low == buddyAdress) ||
-			(get(freeMemDyn_[i], buddyAdress)) != -1 ) {
+			(get(freeMemDyn_[i], buddyAdress, &buddyBits)) != -1 ) {
+			if (buddyBits == -1)
+				buddyBits = freeMem_[i].bits;
 			blockAdrL = blockAdrL < buddyAdress? blockAdrL : buddyAdress;
 			blockSize *= 2;
 			blockAdrH = blockAdrL + blockSize;
-			bits = blockAdrL < buddyAdress ? bits : freeMem_[i].bits;
+			bits = blockAdrL < buddyAdress ? bits : buddyBits;
 			clearTop(&freeMem_[i], freeMemDyn_[i]);
 		}
 		else {
@@ -208,7 +219,7 @@ void delete(void* dynArr, int pos) {
 	*numElements-=1;
 }
 
-int get(void* dynArr, int value) {
+int get(void* dynArr, int value, Bitset* bits) {
 	if (!dynArr)
 		return -1;
 	int size = 3;
@@ -219,6 +230,7 @@ int get(void* dynArr, int value) {
 		int offset = i*size+2;
 		if (arr[offset] == value) {
 			delete(dynArr, offset);
+			*bits = arr[offset + 2];
 			return arr[offset+1];
 		}
 

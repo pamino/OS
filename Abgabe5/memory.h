@@ -25,4 +25,6 @@ extern void mem_free(void *ptr);
  */
 extern void mem_dump(FILE *file);
 
+extern void printFreeMem();
+
 #endif

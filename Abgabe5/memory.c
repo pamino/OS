@@ -99,7 +99,7 @@ void* mem_alloc(size_t size) {
 	}
 	//printf("setting Bit: %i\n", bits2tree(traverse, level));
 	setBit(tree_, bits2tree(traverse, level));
-	printf ("return pHandle: %i\n", MemLow);
+	//printf ("return pHandle: %i\n", MemLow);
 	return &heap[MemLow];
 
 fail:
@@ -190,21 +190,22 @@ void mergeBuddies(MemBlock block, int power) {
 		Bitset buddyBits = -1;
 		if ((freeMem_[i].low == buddyAdress)) {
 			blockAdrL = blockAdrL < buddyAdress ? blockAdrL : buddyAdress;
+			blockSize *= 2;
 			blockAdrH = blockAdrL + blockSize;
-			if (budNum % 2 == 1) bits = freeMem_[i].bits;
+			bits = blockAdrL < buddyAdress ? bits : freeMem_[i].bits;
 			clearTop(&freeMem_[i], &freeMemDyn_[i]);
 		}
 		else if (get(&freeMemDyn_[i], buddyAdress, &buddyBits) != -1 ) {
 				
 			blockAdrL = blockAdrL < buddyAdress? blockAdrL : buddyAdress;
+			blockSize *= 2;
 			blockAdrH = blockAdrL + blockSize;
-			bits = buddyBits;
+			bits = blockAdrL < buddyAdress ? bits : buddyBits;
 		}
 		else {
 			push(&freeMemDyn_[i], (MemBlock){blockAdrL, blockAdrH, 1, bits});
 			return;
 		}
-		blockSize *= 2;
 	}
 
 	return;
